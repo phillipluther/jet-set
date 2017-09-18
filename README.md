@@ -1,6 +1,6 @@
 # JetSet
 
-A tiny, simple, powerful, dynamic library for setting, getting, and watching application state.
+A tiny, dynamic library for setting, getting, and watching application state. It behaves just like a Javascript object ({}).
 
 1. [Installation](#installation)
 2. [Usage](#usage)
@@ -19,91 +19,65 @@ Via npm:
 
 Or, download jet-set.js or jet-set.min.js and include it.
 
-    <script src="jet-set.min.js"></script>
+    <script src="jetSet.min.js"></script>
 
 <a name="usage"></a>
 ## Usage
 
-First, init JetSet.
+Create a JetSet store.
 
-    let appState = new JetSet();
+    let appState = jetSet();
 
-### Setting Values `.set()`
+You can create a store with default values, too.
 
-    appState.set({
-        firstName: 'Jack',
-        lastName: 'Jackson',
-        age: 28
+    let appState = jetSet({
+        firstName: 'Benjamin',
+        lastName: 'Benson',
+        age: 20
     });
 
-### Getting Values `.get()`
+### Getting and Setting Values
 
-    let myValue = appState.get('firstName');
+You interact with your JetSet as if it was a regular ol' JS object.
 
-`myValue` is now `Jack`.
+    // get a value ... outputs 'Benjamin'
+    console.log(appState.firstName);
+    // set a value
+    appState.middleName = 'Benjin';
 
-You can get as many values as you want.
 
-    let myValues = appState.get('firstName', 'lastName', 'age');
+### Watching for Changes
 
-`myValues` is now an object that looks like this:
+Your JetSet object has an `.on()` method for executing actions when values change.
 
-    {
-        firstName: 'Jack',
-        lastName: 'Jackson',
-        age: 28
-    }
+    // create a handler for age changes
+    let handleAgeChange = () => console.log('Age changed!');
+    // attach it to our `age` property
+    appState.on('age', handleAgeChange);
 
-### Watching for Changes `.on()`
+### Unwatching Changes
 
-    // create a callback to execute when age changes
-    let canDrive = (age) => {
-        if (age >= 16) {
-            console.log('Drive yourself!');
-        } else {
-            console.log('Enjoy the ride ...');
-        }
-    };
+To stop watching our age value from the example above, just `.off()` it.
 
-    // attach the callback to age
-    appState.on({
-        age: canDrive
-    });
+    appState.off('age', handleAgeChange);
 
-### Unwatching Watched Changes `.off()`
-
-To stop watching our age value from the example above, just off it.
-
-    appState.off({
-        age: canDrive
-    });
 
 <a name="neatStuff"></a>
 ## The Neat Stuff
 
-You can create dynamic and derived values within a JetSet instance, as well.
+You can create dynamic and derived values within a JetSet object, as well.
 
-    appState.set({
-        apples: 3,
-        oranges: 5,
-        bestFruit: () => {
-            let {apples, oranges} = this.get('apples', 'oranges');
-            // oranges win in a tie
-            return (apples > oranges) ? 'Apples!' : 'Oranges!';
-        }
-    });
+    appState.apples = 3;
+    appState.oranges = 5;
+    appState.totalFruit = () => appState.oranges + appState.apples;
 
-Groovy. What's exceptionally neat is that you can watch derived values as if they were static.
+Groovy. What's exceptionally neat is that you can `.on()` and `.off()` derived values as if they were static.
 
-    appState.watch({
-        bestFruit: (fruit) => console.log('Best fruit?', fruit);
-    });
+    appState.on('totalFruit', (totalFruit) => console.log('More fruit!', totalFruit));
+    appState.apples = 10;
 
-    appState.set({
-        apples: 100
-    });
+    // console outputs "More fruit! 15"
 
-As you've watched the `bestFruit` property and updated `apples` -- which `bestFruit` is derived from -- your callback will execute.
 
 <a name="about"></a>
 ## Good Lord; Another State Library?
@@ -116,13 +90,16 @@ JetSet serves specific purposes. It's not right for everything. Specifically, it
 
 #### Simple
 
-The API is small. A JetSet instance does four things: get, set, on, and off. It provides the bare essentials for creating semi-advanced state management and isn't trying to go over-the-top with convenience.
+Interact with your JetSet as a JavaScript object. It has added convenience for observing and ignoring values via `.on()` and `.off()`.
 
-The answer to, "Well, can I X when Y if Z?" is YES ... programmatically. Not via the library itself.
+JetSet provides the bare essentials for creating unopinionated, semi-advanced state management and isn't trying to go over-the-top with a slew of convenience wrappers.
+
+The answer to, "Well, can I X when Y if Z?" is YES ... programmatically.
 
 #### Tiny
 
-JetSet is about 800 bytes. I'm working to shave that down further, but this lib wants to be lean.
+JetSet is about 600 bytes. I'm working to shave that down further, but this lib wants to be lean.
+
 
 <a name="issues"></a>
 ## Bugs and Feature Requests
