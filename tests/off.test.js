@@ -1,62 +1,40 @@
 let expect = require('chai').expect;
-let JetSet = require('../JetSet');
+let jetSet = require('../src/jetSet');
 
-describe('JetSet.off()', () => {
+describe('Ignoring (state.off)', () => {
+    let state;
+    beforeEach(() => state = jetSet());
 
-    let jetSet, changed;
-    let handleChange = () => changed = true;
-
-    beforeEach(() => {
-        changed = false;
-        jetSet = new JetSet({
-            changeMe: 0
-        });
-
-        jetSet.on({
-            changeMe: handleChange
-        });
+    it('should be available on an initialized store', () => {
+        expect(state.off).not.to.be.undefined;
     });
 
-    it('should instantiate with the public .off() method', () => {
-        expect(jetSet instanceof JetSet).to.be.true;
-        expect(jetSet.off).not.to.be.undefined;
+    it('should remove an action from an observed property', () => {
+        let toggle = false;
+        let toggler = () => toggle = !toggle;
+
+        state.on('changeMe', toggler);
+        state.changeMe = 'ok';
+
+        // ensure the "on" handler is working before testing removal
+        expect(toggle).to.be.true;
+
+        state.off('changeMe', toggler);
+        state.changeMe = 'ok, again';
+
+        expect(toggle).to.be.true; // still
     });
 
-    it('should accept an object of setting/callback pairs to unset', () => {
-        jetSet.off({
-            changeMe: handleChange
-        });
+    it('should remove a single action from an action stack on an observed property', () => {
+        let toggler1 = () => true;
+        let toggler2 = () => true;
 
-        // should not throw exception
-    });
+        state.on('changeMe', toggler1);
+        state.on('changeMe', toggler2);
 
-    it('should remove an action from the given value', () => {
-        jetSet.off({
-            changeMe: handleChange
-        });
+        expect(state.watchers.changeMe.length).to.equal(2);
 
-        jetSet.set({
-            changeMe: 1
-        });
-
-        expect(changed).to.be.false;
-    });
-
-    it('should only remove the specified action if multiple actions are set', () => {
-        let otherChange = 0;
-        jetSet.on({
-            changeMe: () => otherChange++
-        });
-
-        jetSet.off({
-            changeMe: handleChange
-        });
-
-        jetSet.set({
-            changeMe: 1
-        });
-
-        expect(changed).to.be.false;
-        expect(otherChange).to.equal(1);
+        state.off('changeMe', toggler1);
+        expect(state.watchers.changeMe.length).to.equal(1);
     });
 });

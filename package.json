@@ -6,10 +6,13 @@
   "scripts": {
     "build": "npm run makelib && cp ./src/jetSet.js ./lib/jetSet.js && npm run uglify",
     "clean": "rm -rf ./lib",
+    "lint:src": "eslint ./src/jetSet.js",
+    "lint:tests": "eslint ./tests/**/*.js",
     "makelib": "test -d ./lib || mkdir -p ./lib",
     "test": "nyc mocha ./tests",
     "uglify": "uglifyjs ./src/jetSet.js -c -m --toplevel --source-map -o ./lib/jetSet.min.js",
-    "watch:src": "chokidar './src/jetSet.js' -c 'npm run build'"
+    "watch:src": "chokidar './src/jetSet.js' -c 'npm run build'",
+    "watch:tests": "chokidar './tests/**/*.js' -c 'clear && npm run test'"
   },
   "keywords": [
     "state",
@@ -27,6 +30,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chokidar-cli": "^1.2.0",
+    "eslint": "^4.7.0",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "uglify-es": "^3.1.0"

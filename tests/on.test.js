@@ -1,66 +1,59 @@
 let expect = require('chai').expect;
-let JetSet = require('../JetSet');
+let jetSet = require('../src/jetSet');
 
-describe('JetSet.on()', () => {
+describe('Observing (state.on)', () => {
+    let state;
+    beforeEach(() => state = jetSet());
 
-    let jetSet;
-    beforeEach(() => {
-        jetSet = new JetSet();
+    it('should be available on an initialized store', () => {
+        expect(state.on).not.to.be.undefined;
     });
 
-    it('should instantiate with the public .on() method', () => {
-        expect(jetSet instanceof JetSet).to.be.true;
-        expect(jetSet.on).not.to.be.undefined;
+    it('should accept a callback action for a given prop (change)', () => {
+        state.on('myProp', () => 1 + 1);
+        // expect no exceptions
     });
 
-    it('should accept an object of actions keyed to a setting', () => {
-        jetSet.on({
-            simpleString: 'here',
-            number: 100,
-            someThing: () => true,
-            anotherThing: () => 1 + 1,
+    it('should provide new and old value params to a given action', () => {
+        let newValCheck, oldValCheck;
+        state.myProp = 'OLD';
+        state.on('myProp', (newVal, oldVal) => {
+            newValCheck = newVal;
+            oldValCheck = oldVal;
         });
 
-        // should not throw an exception
+        state.myProp = 'NEW';
+
+        expect(newValCheck).to.equal('NEW');
+        expect(oldValCheck).to.equal('OLD');
     });
 
-    it('should return the instance on success', () => {
-        let returnCheck = jetSet.on({
-            this: () => 'that'
-        });
+    it('should not hijack function context for a given action', () => {
+        let thisCheck;
+        function fauxClass() {
+            this.checker = 'fauxClass';
+            thisCheck = this.checker;
+        }
 
-        expect(returnCheck instanceof JetSet).to.be.true;
+        let context = new fauxClass();
+        let action = function() { return true; };
+
+        state.on('changeMe', action.bind(context));
+        state.changeMe = 'OK';
+
+        expect(thisCheck).to.equal('fauxClass');
     });
 
-    it('should execute the given callbacks when a value changes', () => {
-        let changed1 = false;
-        let changed2 = false;
-
-        jetSet.on({
-            willChange: () => changed1 = true,
-            willAlsoChange: () => changed2 = true,
-        });
-
-        jetSet.set({
-            willChange: 'some change',
-            willAlsoChange: 'some change',
-        });
-
-        expect(changed1).to.be.true;
-        expect(changed2).to.be.true;
+    it('should update state.prototype.watchers for managing observed props', () => {
+        state.on('changeMe', () => 1 + 1);
+        expect(state.watchers.changeMe).not.to.be.undefined;
+        expect(state.watchers.changeMe.length).to.equal(1);
     });
 
-    it('should provide the updated value to a given callback', () => {
-        let callbackParam;
+    it('should stack actions to a single observed property', () => {
+        state.on('changeMe', () => 1 + 1);
+        state.on('changeMe', () => 2 + 2);
 
-        jetSet.on({
-            thisWillChange: (val) => callbackParam = val
-        });
-
-        jetSet.set({
-            thisWillChange: 'provided'
-        });
-
-        expect(callbackParam).to.equal('provided');
+        expect(state.watchers.changeMe.length).to.equal(2);
     });
 });

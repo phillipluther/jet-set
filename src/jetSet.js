@@ -22,9 +22,8 @@ function createStore(defaults) {
         //
         //
         on: function (prop, action) {
-            let watchers = this.watchers;
-            watchers[prop] = watchers.prop || [];
-            watchers[prop].push(action);
+            this.watchers[prop] = this.watchers[prop] || [];
+            this.watchers[prop].push(action);
             this.snapshot[prop] = _val(this[prop]);
         },
         //
@@ -65,7 +64,7 @@ function jetSet(defaults) {
                     actions.map((action) => action(newVal, oldVal));
                     store.snapshot[prop] = newVal;
                 }
-            };
+            }
 
             return true;
         },
@@ -74,6 +73,6 @@ function jetSet(defaults) {
             return store.hasOwnProperty(prop) ? _val(store[prop]) : store[prop];
         }
     });
-};
+}
 
 module.exports = jetSet;

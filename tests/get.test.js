@@ -1,56 +1,36 @@
 let expect = require('chai').expect;
-let JetSet = require('../JetSet');
+let jetSet = require('../src/jetSet');
 
-describe('JetSet.get()', function() {
-    let jetSet;
-    beforeEach(() => {
-        jetSet = new JetSet({
-            stringVal: 'String val',
-            boolVal: true,
-            numberVal: 200,
-            functionVal: function() {
-                return true;
-            }
+describe('Getting (state.someProp)', function() {
+    it('should set up an empty store by default', () => {
+        let state = jetSet();
+        expect(Object.keys(state).length).to.equal(0);
+    });
+
+    it('should set up with a store populated by given defaults', () => {
+        let state = jetSet({
+            defaultBool: true,
+            defaultStr: 'Yes',
+            defaultNum: 1,
         });
+
+        expect(state.defaultBool).to.be.true;
+        expect(state.defaultStr).to.equal('Yes');
+        expect(state.defaultNum).to.equal(1);
     });
 
-    it('should ...', () => {
-        return true;
-    });
-    /*
-    it('should instantiate with the public .get() method', () => {
-        expect(jetSet instanceof JetSet).to.be.true;
-        expect(jetSet.get).not.to.be.undefined;
+    it('should return "undefined" for unset values', () => {
+        let state = jetSet();
+        expect(state.notSet).to.be.undefined;
     });
 
-    it('should return the value of a given key', () => {
-        expect(jetSet.get('stringVal')).to.equal('String val');
-    });
+    it('should return the value from a derived/function', () => {
+        let state = jetSet({
+            val1: 2,
+            val2: 3,
+            derived: () => state.val1 + state.val2
+        });
 
-    it('should return an object of key/val pairs from multiple keys', () => {
-        let results = jetSet.get('stringVal', 'boolVal');
-        expect(Object.keys(results).length).to.equal(2);
-        expect(results.stringVal).to.equal('String val');
-        expect(results.boolVal).to.be.true;
+        expect(state.derived).to.equal(5);
     });
-
-    it('should return the result of a derived value, not the signature', () => {
-        expect(jetSet.get('functionVal')).to.be.true;
-    });
-
-    it('should init populated with given defaults', () => {
-        let defaults = jetSet.get(
-            'stringVal',
-            'boolVal',
-            'numberVal',
-            'functionVal'
-        );
-
-        expect(Object.keys(defaults).length).to.equal(4);
-        expect(defaults.stringVal).to.equal('String val');
-        expect(defaults.boolVal).to.be.true;
-        expect(defaults.numberVal).to.equal(200);
-        expect(defaults.functionVal).to.be.true;
-    });
-    */
 });
