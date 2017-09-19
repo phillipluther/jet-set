@@ -1,0 +1,40 @@
+{
+  "name": "jet-set",
+  "version": "0.1.0",
+  "description": "A tiny, simple, powerful, dynamic library for setting, getting, and watching application state.",
+  "main": "lib/jetSet.min.js",
+  "scripts": {
+    "build": "npm run makelib && cp ./src/jetSet.js ./lib/jetSet.js && npm run uglify",
+    "clean": "rm -rf ./lib",
+    "lint": "npm run lint:src && npm run lint:tests",
+    "lint:src": "eslint ./src/jetSet.js",
+    "lint:tests": "eslint ./tests/**/*.js",
+    "makelib": "test -d ./lib || mkdir -p ./lib",
+    "qa": "npm run lint && npm run test",
+    "test": "nyc mocha ./tests",
+    "uglify": "uglifyjs ./src/jetSet.js -c -m --toplevel --source-map -o ./lib/jetSet.min.js",
+    "watch:src": "chokidar './src/jetSet.js' -c 'npm run lint:src && npm run test && npm run build'",
+    "watch:tests": "chokidar './tests/**/*.js' -c 'npm run lint:tests && npm run test'"
+  },
+  "keywords": [
+    "state",
+    "management",
+    "machine",
+    "simple",
+    "get",
+    "set",
+    "watch",
+    "observe",
+    "micro"
+  ],
+  "author": "Phillip Luther",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chokidar-cli": "^1.2.0",
+    "eslint": "^4.7.0",
+    "mocha": "^3.5.3",
+    "nyc": "^11.2.1",
+    "uglify-es": "^3.1.0"
+  }
+}
