@@ -1,6 +1,6 @@
 # JetSet
 
-A tiny, dynamic library for setting, getting, and watching application state. It behaves just like a Javascript object { ... }.
+A micro library for setting, getting, and watching application state.
 
 -----------------------------------------------
 
@@ -10,59 +10,60 @@ A tiny, dynamic library for setting, getting, and watching application state. It
 
 ## Usage
 
-Create a JetSet store.
+    import jetSet from 'jet-set';
 
-    let appState = jetSet();
-
-You can create a store with default values, too.
-
-    let appState = jetSet({
-        firstName: 'Benjamin',
-        lastName: 'Benson',
-        age: 20
+    // create a data store with some defaults
+    let fruitBasket = jetSet({
+        apples: 3,
+        oranges: 5,
+        bananas: 6
     });
 
-You interact with your JetSet as if it was a regular ol' JS object.
+    // interact with your JetSet as if it was a regular ol' JS object.
 
-    // get a value ... outputs 'Benjamin'
-    console.log(appState.firstName);
+    console.log(fruitBasket.apples); // 3
+    fruitBasket.limes = 4;
 
-    // set a value
-    appState.middleName = 'Benjin';
+    // make a little function reminding us to buy more oranges
+    let checkOranges = (oranges) => {
+        if (oranges < 2) {
+            console.log('Oranges are running low!');
+        }
+    };
+
+    // watch 'oranges' in our data store
+    fruitBasket.on('oranges', checkOranges);
+
+    fruitBasket.oranges = 1; // shows the warning above
+
+    // stop watching 'oranges'
+    fruitBasket.off('oranges', checkOranges);
+
+    // add a derived/dynamic property
+    fruitBasket.totalFruit = () => {
+        let {apples, oranges, bananas, limes} = fruitBasket;
+        return apples + oranges + bananas + limes;
+    }
+
+    // it behaves as a static value
+    console.log(fruitBasket.totalFruit); // 14
 
 
-Your JetSet object has an `.on()` method for executing actions when values change.
+## Neater Stuff
 
-    // create a handler for age changes
-    let handleAgeChange = () => console.log('Age changed!');
+Since derived properties on our JetSet object act just like static values, we can watch/unwatch/use 'em like anything else. Continuing from above:
 
-    // attach it to our `age` property
-    appState.on('age', handleAgeChange);
+    // watch for changes to our 'totalFruit' derived prop
+    fruitBasket.on('totalFruit', (newCount, oldCount) => {
+        console.log(`Fruit count changed from ${oldCount} to ${newCount}.`);
+    });
 
-To stop watching our age value from the example above, `.off()` it.
+    fruitBasket.apples = 10;
+    // console outputs 'Fruit count changed from 14 to 21.'
 
-    appState.off('age', handleAgeChange);
-
-
-## The Neat Stuff
-
-You can create dynamic and derived values within a JetSet object, as well.
-
-    appState.apples = 3;
-    appState.oranges = 5;
-    appState.totalFruit = () => appState.oranges + appState.apples;
-
-    // outputs 8
-    console.log(appState.totalFruit);
-
-Groovy. What's exceptionally neat is that you can `.on()` and `.off()` derived values as if they were static.
-
-    ... ctd from above ...
-
-    appState.on('totalFruit', (totalFruit) => console.log('More fruit!', totalFruit));
-    appState.apples = 10;
-
-    // console outputs "More fruit! 15"
+    let {totalFruit} = fruitBasket;
+    totalFruit === 21; //true
+    typeof totalFruit === 'function'; // false
 
 
 ## Bugs and Feature Requests
