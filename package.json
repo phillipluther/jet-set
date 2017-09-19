@@ -6,13 +6,15 @@
   "scripts": {
     "build": "npm run makelib && cp ./src/jetSet.js ./lib/jetSet.js && npm run uglify",
     "clean": "rm -rf ./lib",
+    "lint": "npm run lint:src && npm run lint:tests",
     "lint:src": "eslint ./src/jetSet.js",
     "lint:tests": "eslint ./tests/**/*.js",
     "makelib": "test -d ./lib || mkdir -p ./lib",
+    "qa": "npm run lint && npm run test",
     "test": "nyc mocha ./tests",
     "uglify": "uglifyjs ./src/jetSet.js -c -m --toplevel --source-map -o ./lib/jetSet.min.js",
-    "watch:src": "chokidar './src/jetSet.js' -c 'npm run build'",
-    "watch:tests": "chokidar './tests/**/*.js' -c 'clear && npm run test'"
+    "watch:src": "chokidar './src/jetSet.js' -c 'npm run lint:src && npm run test && npm run build'",
+    "watch:tests": "chokidar './tests/**/*.js' -c 'npm run lint:tests && npm run test'"
   },
   "keywords": [
     "state",
