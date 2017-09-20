@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>A micro library for creating dynamically-static, observable state objects. | JetSet</title>
+    <meta name="description" content="JetSet is a simple, super-tiny library for enhancing JavaScript objects. Observe changes, create dynamic properties, and more!">
+    <meta name="author" content="Phillip Luther">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,900" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <header class="pageHeader" id="pageHeader">
+        <h1 class="pageHeader-title">
+            JetSet
+            <span class="pageHeader-subtitle">A micro library for creating dynamically-static, observable state objects.</span>
+        </h1>
+
+        <button class="primaryNav-toggle" id="navToggle">
+            <span class="sr primaryNav-whenClosed">Show Navigation Menu</span>
+            <span class="sr primaryNav-whenOpen">Close Navigation Menu</span>
+
+            <span class="primaryNav-toggleIcon"></span>
+        </button>
+
+        <div class="obscure"></div>
+        <nav class="pageHeader-nav">
+            <ul class="primaryNav">
+                <li class="primaryNav-item">
+                    <a href="#installation" class="primaryNav-link">Installation</a>
+                </li>
+
+                <li class="primaryNav-item">
+                    <a href="#usage" class="primaryNav-link">Usage</a>
+
+                    <ul class="secondaryNav">
+                        <li class="secondaryNav-item">
+                            <a href="#set" class="secondaryNav-link">Setting Values</a>
+                        </li>
+
+                        <li class="secondaryNav-item">
+                            <a href="#get" class="secondaryNav-link">Getting Values</a>
+                        </li>
+
+                        <li class="secondaryNav-item">
+                            <a href="#on" class="secondaryNav-link">Watching Values</a>
+                        </li>
+
+                        <li class="secondaryNav-item">
+                            <a href="#off" class="secondaryNav-link">Unwatching Values</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="primaryNav-item">
+                    <a href="#about" class="primaryNav-link">About the Project</a>
+                </li>
+
+                <li class="primaryNav-item">
+                    <a href="#issues" class="primaryNav-link">Issues/Bugs</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="pageMain">
+        <h2 id="installation">Installation</h2>
+        <p>Install JetSet via NPM; it's about 0.6k with no dependencies, so you shouldn't have to wait long.</p>
+        <pre><code>npm install --save jet-set</code></pre>
+
+        <p>Then, import it normally.</p>
+        <pre><code>import jetSet from 'jet-set';</code></pre>
+
+        <h2 id="usage">Usage</h2>
+
+        <p>First, create a new JetSet object.</p>
+        <pre><code>let superObj = jetSet();</code></pre>
+
+        <p>When you create your JetSet you can set some default values, too.</p>
+
+<pre><code>let duperObj = jetSet({
+    apples: 5,
+    oranges: 3,
+    bananas: 6
+});
+</code></pre>
+
+        <p>That's it! <code>superObj</code> and <code>duperObj</code> now behave as normal JavaScript objects, with a few major enhancements.</p>
+
+        <h3 id="set">Setting Values</h3>
+        <p>Think of JetSets as enhanced JavaScript objects. You set values on them just as you would on a vanilla object.</p>
+
+<pre><code>let superObj = jetSet();
+
+superObj.someProp = 'Some value';
+superObj.anotherProp = true;
+
+let prop = 'yetAnotherProp';
+superObj[prop] = 12;
+</code></pre>
+
+        <h4>Setting Dynamic Values</h4>
+        <p>A JetSet object lets you define dynamic or derived properties, too. On the getting-side, these will behave as static values (more on this in the <a href="#getDynamic">Getting Dynamic Properties</a> section).</p>
+
+<pre><code>superObj.apples = 5;
+superObj.oranges = 3;
+superObj.totalFruit = () => superObj.apples + superObj.oranges;
+</code></pre>
+
+
+        <h3 id="get">Getting Values</h3>
+        <p>You retrieve values just as you would with normal JS objects.</p>
+
+<pre><code>let superObj = jetSet({
+    someBool: true,
+    someStr: 'Hello, world!'
+});
+
+if (superObj.someBool) {
+    console.log(superObj.someStr); // Hello, world!
+}
+</code></pre>
+
+        <h4 id="getDynamic">Getting Dynamic Properties</h4>
+        <p>Access dynamic properties as if they were static.</p>
+
+<pre><code>superObj.apples = 5;
+superObj.oranges = 3;
+superObj.totalFruit = () => superObj.apples + superObj.oranges
+
+// outputs 8
+console.log(superObj.totalFruit);
+
+// throws an exception, as .totalFruit is not a function
+console.log(superObj.totalFruit());
+</code></pre>
+
+        <p>Getting a dynamic property returns the result of an assigned function, not the function signature. This makes JetSet great for holding state; derived values can be treated as static, stateful properties. This means they can be <a href="#on">observed</a>, as well.</p>
+
+        <h4>Getting Values via the Usual Object Suspects</h4>
+
+        <p>Given that JetSets get and set like objects, you can do all this stuff, too. (Assume we've created a JetSet and named it superObj.)</p>
+
+<pre><code>let {someProp, anotherProp, yetAnotherProp} = superObj;
+console.log(someProp, anotherProp, yetAnotherProp);
+
+let keys = Object.keys(superObj);
+keys.map((key) => console.log(superObj[key]));
+
+for (let prop in superObj) {
+    console.log(superObj[prop]);
+}
+</code></pre>
+
+        <h3 id="on">Watching Values</h3>
+        <p>You can attach handlers to any property in a JetSet object - be it static or dynamic - to execute when a value changes.</p>
+
+        <p>Do this via <code>.on(prop, changeHandler)</code>.</p>
+
+<pre><code>let superObj = jetSet({
+    apples: 5,
+    oranges: 3,
+    bananas: 2
+    totalFruit: () => superObj.apples + superObj.oranges + superObj.bananas
+});
+
+superObj.on('apples', (newVal, oldVal) => {
+    console.log(`Apples was ${oldVal} and is now ${newVal}`);
+});
+
+superObj.apples = 10; // console out, "Apples was 5 and is now 10"
+
+// no change, so no output
+superObj.apples = 10;
+</code></pre>
+
+        <p>Handlers/callbacks attached to changes via <code>.on()</code> receive the updated value and the old value as params, respectively. If the assigned value does not change, the handler is not executed.</p>
+
+        <p>Change handlers stack, so you can attach more than one to the same property.</p>
+
+<pre><code>...
+
+superObj.on('oranges', () => console.log('Oranges'));
+superObj.on('oranges', () => console.log('... just updated!'));
+
+superObj.oranges = 2;
+// console out, "Oranges"
+// console out, "... just updated!"
+</code></pre>
+
+        <h4 id="onDynamic">Watching Dynamic Properties</h4>
+        <p>Groovier still, this works on dynamic/derived properties. Continuing the above code block:</p>
+
+<pre><code>...
+
+superObj.on('totalFruit', (totalFruit) => {
+    console.log(`Total fruit: ${totalFruit}`);
+});
+
+superObj.bananas = 5; // console out, "Total fruit: 17"
+</code></pre>
+
+        <h3 id="off">Unwatching Values</h3>
+        <p>As handlers are attached to changes via <code>.on()</code>, we can logically remove them via <code>.off()</code>.
+
+<pre><code>let superObj = jetSet({
+    apples: 3,
+    oranges: 2
+});
+
+let handler1 = () => console.log('Called!');
+let handler2 = () => console.log('Also called!');
+
+superObj.on('apples', handler1);
+superObj.on('apples', handler2);
+
+superObj.apples = 4;
+// console out, "Called!"
+// console out, "Also called!"
+
+superObj.off('apples', handler2);
+
+superObj.apples = 1;
+// console out, "Called!"
+</code></pre>
+
+        <p>Change handlers are matched by reference; you can attach anonymous functions easily enough via <code>.on()</code> but that can make them painful to remove. Using named functions is recommended if you're going to attach or detach them regularly.</p>
+
+
+        <h2 id="about">About JetSet</h2>
+        <p>This library aims to be three things: simple, tiny, and stateful.</p>
+
+        <h3>Simple</h3>
+        <p>Interacting with a JetSet object should feel familiar, mirroring how you set and get properties on a vanilla JavaScript object. The <code>.on()</code> and <code>.off()</code> methods (on JetSet's prototype) are the only things you need to remember.</p>
+
+        <p>To keep it simple (and small), JetSet doesn't provide many conveniences ... like a <code>.set({ ... })</code> method that you see on many state objects/models. This was by design. It's intended to be a micro-library with a light API for use as a component in larger projects, not a full-featured library to cover all use cases.</p>
+
+        <p>Since it behaves so similarly to a JS object, however, creating your own wrappers or facades to automate tasks should be straight-forward.</p>
+
+
+        <h3>Tiny</h3>
+        <p>I wrote JetSet's ugly, quick, and dirty progenitor for the <a href="http://js13kgames.com/">JS13K Games</a> competition in 2017. JS13K is a friendly competition where participants create an HTML/JS/CSS game in under 13k, so every byte counts.</p>
+
+        <p>JetSet retains its roots and tries to be as small a package as possible for the functionality it provides.</p>
+
+        <p>Currently, it's 587 bytes (compressed, of course).</p>
+
+        <h3>Stateful</h3>
+        <p>You can use a JetSet object for a number of applications, though its primary purpose is for creating stateful objects. That's why even dynamic properties are treated as static - a JetSet represents "right now" even if properties are derived from other values.</p>
+
+        <p>"It depends" is not stateful. A function that returns X + Y is not stateful; the result of that function is. JetSets try to emulate a static snapshot of state even if the working under-the-hood are dynamic.</p>
+
+
+        <h2 id="issues">Issues/Bugs</h2>
+        <p><a href="https://github.com/phillipluther/jet-set/issues">Issues, bugs, and feature requests</a> are tracked on GitHub in full public view.</p>
+    </main>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
