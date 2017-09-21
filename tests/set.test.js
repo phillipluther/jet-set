@@ -47,7 +47,7 @@ describe('Setting (state.someProp = someVal)', function() {
 
     it('should trigger an action when an observed property changes', () => {
         let isChanged = false;
-        state.on('changeMe', () => isChanged = true);
+        state.onChange('changeMe', () => isChanged = true);
         state.changeMe = 'anything else';
 
         expect(isChanged).to.be.true;
@@ -57,8 +57,8 @@ describe('Setting (state.someProp = someVal)', function() {
         let isChanged1 = false;
         let isChanged2 = false;
 
-        state.on('changeMe', () => isChanged1 = true);
-        state.on('changeMe', () => isChanged2 = true);
+        state.onChange('changeMe', () => isChanged1 = true);
+        state.onChange('changeMe', () => isChanged2 = true);
 
         state.changeMe = 'ok';
         expect(isChanged1).to.be.true;
@@ -69,7 +69,7 @@ describe('Setting (state.someProp = someVal)', function() {
         let isChanged = false;
         state.changeMe = true;
 
-        state.on('changeMe', () => isChanged = true);
+        state.onChange('changeMe', () => isChanged = true);
         state.changeMe = true;
 
         expect(isChanged).to.be.false;

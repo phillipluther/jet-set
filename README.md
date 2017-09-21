@@ -1,6 +1,6 @@
 # JetSet
 
-A micro library for setting, getting, and watching application state.
+A micro library for creating dynamically-static, observable state objects.
 
 -----------------------------------------------
 
@@ -8,7 +8,9 @@ A micro library for setting, getting, and watching application state.
 
     npm install --save jet-set
 
-## Usage
+## Usage Highlights
+
+This is a snapshot of some neat features; check out the [full documentation](https://phillipluther.github.io/jet-set) for all the nitty-gritty.
 
     import jetSet from 'jet-set';
 
@@ -19,51 +21,40 @@ A micro library for setting, getting, and watching application state.
         bananas: 6
     });
 
-    // interact with your JetSet as if it was a regular ol' JS object.
-
-    console.log(fruitBasket.apples); // 3
+    // add new values just like a JS object
     fruitBasket.limes = 4;
-
-    // make a little function reminding us to buy more oranges
-    let checkOranges = (oranges) => {
-        if (oranges < 2) {
-            console.log('Oranges are running low!');
-        }
-    };
-
-    // watch 'oranges' in our data store
-    fruitBasket.on('oranges', checkOranges);
-
-    fruitBasket.oranges = 1; // shows the warning above
-
-    // stop watching 'oranges'
-    fruitBasket.off('oranges', checkOranges);
+    fruitBasket.lemons = 2;
 
     // add a derived/dynamic property
     fruitBasket.totalFruit = () => {
-        let {apples, oranges, bananas, limes} = fruitBasket;
-        return apples + oranges + bananas + limes;
+        let {apples, oranges, bananas, limes, lemons} = fruitBasket;
+        return apples + oranges + bananas + limes + lemons;
     }
 
-    // it behaves as a static value
-    console.log(fruitBasket.totalFruit); // 14
+    // watch for changes, even on a dynamic value
+    let buyMoreCitrus = () => {
+        let {oranges, limes, lemons} = fruitBasket;
+
+        if ((oranges < 2) || (limes < 2) || (lemons < 2)) {
+            console.log('Buy more citrus!');
+        }
+    };
+
+    fruitBasket.on('totalFruit', buyMoreCitrus);
+
+    fruitBasket.lemons = 1;
+    // console triggers above, "Buy more citrus!"
 
 
-## Neater Stuff
+## About JetSet
 
-Since derived properties on our JetSet object act just like static values, we can watch/unwatch/use 'em like anything else. Continuing from above:
+This library aims to be three things: simple, tiny, and stateful.
 
-    // watch for changes to our 'totalFruit' derived prop
-    fruitBasket.on('totalFruit', (newCount, oldCount) => {
-        console.log(`Fruit count changed from ${oldCount} to ${newCount}.`);
-    });
+* Interacting with a JetSet object should feel familiar, mirroring how you set and get properties on a vanilla JavaScript object.
+* It's 541 bytes with no dependencies.
+* It treats derived/dynamic properties as static snapshots, making it great for managing state.
 
-    fruitBasket.apples = 10;
-    // console outputs 'Fruit count changed from 14 to 21.'
-
-    let {totalFruit} = fruitBasket;
-    totalFruit === 21; //true
-    typeof totalFruit === 'function'; // false
+Deeper details can be found in the [official documentation](https://phillipluther.github.io/jet-set).
 
 
 ## Bugs and Feature Requests

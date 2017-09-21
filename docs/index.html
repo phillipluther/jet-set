@@ -157,7 +157,7 @@ for (let prop in superObj) {
         <h3 id="on">Watching Values</h3>
         <p>You can attach handlers to any property in a JetSet object - be it static or dynamic - to execute when a value changes.</p>
 
-        <p>Do this via <code>.on(prop, changeHandler)</code>.</p>
+        <p>Do this via <code>.onChange(prop, changeHandler)</code>.</p>
 
 <pre><code>let superObj = jetSet({
     apples: 5,
@@ -166,7 +166,7 @@ for (let prop in superObj) {
     totalFruit: () => superObj.apples + superObj.oranges + superObj.bananas
 });
 
-superObj.on('apples', (newVal, oldVal) => {
+superObj.onChange('apples', (newVal, oldVal) => {
     console.log(`Apples was ${oldVal} and is now ${newVal}`);
 });
 
@@ -176,14 +176,14 @@ superObj.apples = 10; // console out, "Apples was 5 and is now 10"
 superObj.apples = 10;
 </code></pre>
 
-        <p>Handlers/callbacks attached to changes via <code>.on()</code> receive the updated value and the old value as params, respectively. If the assigned value does not change, the handler is not executed.</p>
+        <p>Handlers/callbacks attached to changes via <code>.onChange()</code> receive the updated value and the old value as params, respectively. If the assigned value does not change, the handler is not executed.</p>
 
         <p>Change handlers stack, so you can attach more than one to the same property.</p>
 
 <pre><code>...
 
-superObj.on('oranges', () => console.log('Oranges'));
-superObj.on('oranges', () => console.log('... just updated!'));
+superObj.onChange('oranges', () => console.log('Oranges'));
+superObj.onChange('oranges', () => console.log('... just updated!'));
 
 superObj.oranges = 2;
 // console out, "Oranges"
@@ -195,7 +195,7 @@ superObj.oranges = 2;
 
 <pre><code>...
 
-superObj.on('totalFruit', (totalFruit) => {
+superObj.onChange('totalFruit', (totalFruit) => {
     console.log(`Total fruit: ${totalFruit}`);
 });
 
@@ -203,7 +203,7 @@ superObj.bananas = 5; // console out, "Total fruit: 17"
 </code></pre>
 
         <h3 id="off">Unwatching Values</h3>
-        <p>As handlers are attached to changes via <code>.on()</code>, we can logically remove them via <code>.off()</code>.
+        <p>As handlers are attached to changes via <code>.onChange()</code>, we can logically remove them via <code>.offChange()</code>.
 
 <pre><code>let superObj = jetSet({
     apples: 3,
@@ -213,27 +213,27 @@ superObj.bananas = 5; // console out, "Total fruit: 17"
 let handler1 = () => console.log('Called!');
 let handler2 = () => console.log('Also called!');
 
-superObj.on('apples', handler1);
-superObj.on('apples', handler2);
+superObj.onChange('apples', handler1);
+superObj.onChange('apples', handler2);
 
 superObj.apples = 4;
 // console out, "Called!"
 // console out, "Also called!"
 
-superObj.off('apples', handler2);
+superObj.offChange('apples', handler2);
 
 superObj.apples = 1;
 // console out, "Called!"
 </code></pre>
 
-        <p>Change handlers are matched by reference; you can attach anonymous functions easily enough via <code>.on()</code> but that can make them painful to remove. Using named functions is recommended if you're going to attach or detach them regularly.</p>
+        <p>Change handlers are matched by reference; you can attach anonymous functions easily enough via <code>.onChange()</code> but that can make them painful to remove. Using named functions is recommended if you're going to attach or detach them regularly.</p>
 
 
         <h2 id="about">About JetSet</h2>
         <p>This library aims to be three things: simple, tiny, and stateful.</p>
 
         <h3>Simple</h3>
-        <p>Interacting with a JetSet object should feel familiar, mirroring how you set and get properties on a vanilla JavaScript object. The <code>.on()</code> and <code>.off()</code> methods (on JetSet's prototype) are the only things you need to remember.</p>
+        <p>Interacting with a JetSet object should feel familiar, mirroring how you set and get properties on a vanilla JavaScript object. The <code>.onChange()</code> and <code>.offChange()</code> methods (on JetSet's prototype) are the only things you need to remember.</p>
 
         <p>To keep it simple (and small), JetSet doesn't provide many conveniences ... like a <code>.set({ ... })</code> method that you see on many state objects/models. This was by design. It's intended to be a micro-library with a light API for use as a component in larger projects, not a full-featured library to cover all use cases.</p>
 
@@ -245,7 +245,7 @@ superObj.apples = 1;
 
         <p>JetSet retains its roots and tries to be as small a package as possible for the functionality it provides.</p>
 
-        <p>Currently, it's 529 bytes (compressed, of course) and striving to shrink further.</p>
+        <p>Currently, it's 541 bytes (compressed, of course) and striving to shrink further.</p>
 
         <h3>Stateful</h3>
         <p>You can use a JetSet object for a number of applications, though its primary purpose is for creating stateful objects. That's why even dynamic properties are treated as static - a JetSet represents "right now" even if properties are derived from other values.</p>

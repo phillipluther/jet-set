@@ -1,7 +1,7 @@
 {
   "name": "jet-set",
   "version": "0.1.1",
-  "description": "A tiny, simple, powerful, dynamic library for setting, getting, and watching application state.",
+  "description": "A micro library for creating dynamically-static, observable state objects.",
   "main": "lib/jetSet.min.js",
   "scripts": {
     "build": "npm run makelib && cp ./src/jetSet.js ./lib/jetSet.js && npm run uglify",
