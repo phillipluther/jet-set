@@ -245,12 +245,12 @@ superObj.apples = 1;
 
         <p>JetSet retains its roots and tries to be as small a package as possible for the functionality it provides.</p>
 
-        <p>Currently, it's 587 bytes (compressed, of course).</p>
+        <p>Currently, it's 529 bytes (compressed, of course) and striving to shrink further.</p>
 
         <h3>Stateful</h3>
         <p>You can use a JetSet object for a number of applications, though its primary purpose is for creating stateful objects. That's why even dynamic properties are treated as static - a JetSet represents "right now" even if properties are derived from other values.</p>
 
-        <p>"It depends" is not stateful. A function that returns X + Y is not stateful; the result of that function is. JetSets try to emulate a static snapshot of state even if the working under-the-hood are dynamic.</p>
+        <p>"It depends" is not stateful. A function that returns X + Y is not stateful; the result of that function is. JetSets try to emulate a static snapshot of state even if the under-the-hood workings are dynamic.</p>
 
 
         <h2 id="issues">Issues/Bugs</h2>
