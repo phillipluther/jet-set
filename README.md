@@ -40,7 +40,7 @@ This is a snapshot of some neat features; check out the [full documentation](htt
         }
     };
 
-    fruitBasket.on('totalFruit', buyMoreCitrus);
+    fruitBasket.onChange('totalFruit', buyMoreCitrus);
 
     fruitBasket.lemons = 1;
     // console triggers above, "Buy more citrus!"
