@@ -150,7 +150,9 @@ let keys = Object.keys(superObj);
 keys.map((key) => console.log(superObj[key]));
 
 for (let prop in superObj) {
-    console.log(superObj[prop]);
+    if (superObj.hasOwnProperty(prop)) {
+        console.log(superObj[prop]);
+    }
 }
 </code></pre>
 
@@ -162,7 +164,7 @@ for (let prop in superObj) {
 <pre><code>let superObj = jetSet({
     apples: 5,
     oranges: 3,
-    bananas: 2
+    bananas: 2,
     totalFruit: () => superObj.apples + superObj.oranges + superObj.bananas
 });
 
