@@ -295,6 +295,7 @@ p {
         height: auto;
         padding: 39px 0 0;
         border-top: 1px solid #c9c7c5;
+        box-shadow: none;
     }
 
     .pageMain {
