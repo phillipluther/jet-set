@@ -1,6 +1,6 @@
 {
   "name": "jet-set",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A micro library for creating dynamically-static, observable state objects.",
   "main": "lib/jetSet.min.js",
   "scripts": {
