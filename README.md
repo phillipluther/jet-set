@@ -51,7 +51,7 @@ This is a snapshot of some neat features; check out the [full documentation](htt
 This library aims to be three things: simple, tiny, and stateful.
 
 * Interacting with a JetSet object should feel familiar, mirroring how you set and get properties on a vanilla JavaScript object.
-* It's 541 bytes with no dependencies.
+* It's 505 bytes with no dependencies.
 * It treats derived/dynamic properties as static snapshots, making it great for managing state.
 
 Deeper details can be found in the [official documentation](https://phillipluther.github.io/jet-set).
