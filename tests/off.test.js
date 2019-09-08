@@ -1,40 +1,39 @@
-let expect = require('chai').expect;
-let jetSet = require('../src/jetSet');
+const jetSet = require('../src/jet-set');
 
 describe('Ignoring (state.offChange)', () => {
     let state;
     beforeEach(() => state = jetSet());
 
-    it('should be available on an initialized store', () => {
-        expect(state.offChange).not.to.be.undefined;
+    test('hook is available on a store', () => {
+        expect(state.offChange).not.toBeUndefined();
     });
 
-    it('should remove an action from an observed property', () => {
+    test('removes an action from an observed property', () => {
         let toggle = false;
-        let toggler = () => toggle = !toggle;
+        const toggler = () => toggle = !toggle;
 
         state.onChange('changeMe', toggler);
         state.changeMe = 'ok';
 
         // ensure the "on" handler is working before testing removal
-        expect(toggle).to.be.true;
+        expect(toggle).toBe(true);
 
         state.offChange('changeMe', toggler);
         state.changeMe = 'ok, again';
 
-        expect(toggle).to.be.true; // still
+        expect(toggle).toBe(true); // still
     });
 
-    it('should remove a single action from an action stack on an observed property', () => {
-        let toggler1 = () => true;
-        let toggler2 = () => true;
+    test('removes an action from the action stack for a property', () => {
+        const toggler1 = () => true;
+        const toggler2 = () => true;
 
         state.onChange('changeMe', toggler1);
         state.onChange('changeMe', toggler2);
 
-        expect(state.watchers.changeMe.length).to.equal(2);
+        expect(state.watchers.changeMe.length).toEqual(2);
 
         state.offChange('changeMe', toggler1);
-        expect(state.watchers.changeMe.length).to.equal(1);
+        expect(state.watchers.changeMe.length).toEqual(1);
     });
 });

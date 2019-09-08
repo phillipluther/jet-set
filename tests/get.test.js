@@ -1,36 +1,43 @@
-let expect = require('chai').expect;
-let jetSet = require('../src/jetSet');
+const jetSet = require('../src/jet-set');
 
-describe('Getting (state.someProp)', function() {
-    it('should set up an empty store by default', () => {
-        let state = jetSet();
-        expect(Object.keys(state).length).to.equal(0);
+describe('Getting (state.someProp)', () => {
+    test('creates an empty store', () => {
+        const state = jetSet();
+        expect(Object.keys(state).length).toEqual(0);
     });
 
-    it('should set up with a store populated by given defaults', () => {
-        let state = jetSet({
+    test('sets up a store populated by defaults', () => {
+        const state = jetSet({
             defaultBool: true,
             defaultStr: 'Yes',
             defaultNum: 1,
         });
 
-        expect(state.defaultBool).to.be.true;
-        expect(state.defaultStr).to.equal('Yes');
-        expect(state.defaultNum).to.equal(1);
+        expect(state.defaultBool).toBe(true);
+        expect(state.defaultStr).toEqual('Yes');
+        expect(state.defaultNum).toEqual(1);
     });
 
-    it('should return "undefined" for unset values', () => {
-        let state = jetSet();
-        expect(state.notSet).to.be.undefined;
+    test('returns "undefined" for unset values', () => {
+        const state = jetSet();
+        expect(state.notSet).toBeUndefined();
     });
 
-    it('should return the value from a derived/function', () => {
-        let state = jetSet({
+    test('returns a static value', () => {
+        const state = jetSet({
+            static: 'hello'
+        });
+
+        expect(state.static).toEqual('hello');
+    });
+
+    test('returns a derived value', () => {
+        const state = jetSet({
             val1: 2,
             val2: 3,
             derived: () => state.val1 + state.val2
         });
 
-        expect(state.derived).to.equal(5);
+        expect(state.derived).toEqual(5);
     });
 });

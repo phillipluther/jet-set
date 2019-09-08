@@ -1,20 +1,19 @@
-let expect = require('chai').expect;
-let jetSet = require('../src/jetSet');
+const jetSet = require('../src/jet-set');
 
 describe('Observing (state.onChange)', () => {
     let state;
     beforeEach(() => state = jetSet());
 
-    it('should be available on an initialized store', () => {
-        expect(state.onChange).not.to.be.undefined;
+    test('hook is available on a store', () => {
+        expect(state.onChange).not.toBeUndefined();
     });
 
-    it('should accept a callback action for a given prop (change)', () => {
+    test('accepts a callback for a prop (change)', () => {
         state.onChange('myProp', () => 1 + 1);
         // expect no exceptions
     });
 
-    it('should provide new and old value params to a given action', () => {
+    test('provides new and old value params to an action', () => {
         let newValCheck, oldValCheck;
         state.myProp = 'OLD';
         state.onChange('myProp', (newVal, oldVal) => {
@@ -24,36 +23,36 @@ describe('Observing (state.onChange)', () => {
 
         state.myProp = 'NEW';
 
-        expect(newValCheck).to.equal('NEW');
-        expect(oldValCheck).to.equal('OLD');
+        expect(newValCheck).toEqual('NEW');
+        expect(oldValCheck).toEqual('OLD');
     });
 
-    it('should not hijack function context for a given action', () => {
+    test('does not hijack function context for a given action', () => {
         let thisCheck;
         function fauxClass() {
             this.checker = 'fauxClass';
             thisCheck = this.checker;
         }
 
-        let context = new fauxClass();
-        let action = function() { return true; };
+        const context = new fauxClass();
+        const action = function() { return true; };
 
         state.onChange('changeMe', action.bind(context));
         state.changeMe = 'OK';
 
-        expect(thisCheck).to.equal('fauxClass');
+        expect(thisCheck).toEqual('fauxClass');
     });
 
-    it('should update state.prototype.watchers for managing observed props', () => {
+    test('updates watchers for observed props', () => {
         state.onChange('changeMe', () => 1 + 1);
-        expect(state.watchers.changeMe).not.to.be.undefined;
-        expect(state.watchers.changeMe.length).to.equal(1);
+        expect(state.watchers.changeMe).not.toBeUndefined();
+        expect(state.watchers.changeMe.length).toEqual(1);
     });
 
-    it('should stack actions to a single observed property', () => {
+    test('stacks actions for a property', () => {
         state.onChange('changeMe', () => 1 + 1);
         state.onChange('changeMe', () => 2 + 2);
 
-        expect(state.watchers.changeMe.length).to.equal(2);
+        expect(state.watchers.changeMe.length).toEqual(2);
     });
 });

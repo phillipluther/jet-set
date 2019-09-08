@@ -1,25 +1,24 @@
-let expect = require('chai').expect;
-let jetSet = require('../src/jetSet');
+const jetSet = require('../src/jet-set');
 
 describe('Setting (state.someProp = someVal)', function() {
     let state;
     beforeEach(() => state = jetSet());
 
-    it('should set a value on the store', () => {
-        expect(state.someVal).to.be.undefined;
+    test('sets a value', () => {
+        expect(state.someVal).toBeUndefined();
 
         state.someVal = true;
-        expect(state.someVal).to.be.true;
+        expect(state.someVal).toBe(true);
     });
 
-    it('should create a signature like an Object after setting', () => {
+    test('creates an Object-like signature after setting', () => {
         state.someVal = true;
         state.someOtherVal = 'Y';
 
-        expect(Object.keys(state).length).to.equal(2);
+        expect(Object.keys(state).length).toEqual(2);
     });
 
-    it('should accept primitive types, just like an Object', () => {
+    test('accepts primitive types like an Object', () => {
         state.someString = 'Y';
         state.someBool = true;
         state.someNum = 1;
@@ -28,32 +27,32 @@ describe('Setting (state.someProp = someVal)', function() {
         // expect no exceptions
     });
 
-    it('should accept a function for creating derived properties', () => {
+    test('accepts a function for creating derived properties', () => {
         state.derived = () => 1 + 1;
         //expect no exceptions
     });
 
-    it('should "set" derived properties as static values', () => {
+    test('sets derived properties as static values', () => {
         state.derived = () => 1 + 1;
-        expect(state.derived).to.be.a('number'); // not a function
+        expect(typeof state.derived).toEqual('number'); // not a function
     });
 
-    it('should overwrite an existing value, just like an Object', () => {
+    test('overwrites an existing value', () => {
         state.val = 'Hello!';
         state.val = 'Changed';
 
-        expect(state.val).to.equal('Changed');
+        expect(state.val).toEqual('Changed');
     });
 
-    it('should trigger an action when an observed property changes', () => {
+    test('triggers an action when an observed property changes', () => {
         let isChanged = false;
         state.onChange('changeMe', () => isChanged = true);
         state.changeMe = 'anything else';
 
-        expect(isChanged).to.be.true;
+        expect(isChanged).toBe(true);
     });
 
-    it('should trigger an action stack when an observerd property changes', () => {
+    test('triggers actions when an observerd property changes', () => {
         let isChanged1 = false;
         let isChanged2 = false;
 
@@ -61,17 +60,17 @@ describe('Setting (state.someProp = someVal)', function() {
         state.onChange('changeMe', () => isChanged2 = true);
 
         state.changeMe = 'ok';
-        expect(isChanged1).to.be.true;
-        expect(isChanged2).to.be.true;
+        expect(isChanged1).toBe(true);
+        expect(isChanged2).toBe(true);
     });
 
-    it('should not trigger an action when an observerd property does not change', () => {
+    test('takes no action when an observerd property does not change', () => {
         let isChanged = false;
         state.changeMe = true;
 
         state.onChange('changeMe', () => isChanged = true);
         state.changeMe = true;
 
-        expect(isChanged).to.be.false;
+        expect(isChanged).toBe(false);
     });
 });
