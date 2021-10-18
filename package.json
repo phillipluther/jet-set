@@ -1,6 +1,6 @@
 {
   "name": "jet-set",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A micro library for creating dynamically-static, observable state objects.",
   "main": "lib/jet-set.min.js",
   "scripts": {
@@ -38,9 +38,9 @@
   "homepage": "https://phillipluther.github.io/jet-set",
   "license": "MIT",
   "devDependencies": {
-    "chokidar-cli": "^2.0.0",
-    "eslint": "^6.3.0",
-    "jest": "^24.9.0",
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^8.0.1",
+    "jest": "^27.3.0",
     "uglify-es": "^3.3.9"
   }
 }
