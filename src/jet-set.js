@@ -22,31 +22,26 @@ const createStore = () => {
   });
 };
 
-module.exports = defaults => {
-  let store = createStore();
-  Obj.assign(store, defaults);
+module.exports = defaults => new Proxy(Obj.assign(createStore(), defaults), {
+  set(store, prop, val) {
+    let { watchers, snapshot } = store;
 
-  return new Proxy(store, {
-    set(store, prop, val) {
-      let { watchers, snapshot } = store;
+    store[prop] = val;
 
-      store[prop] = val;
+    for (let prop in watchers) {
+      const oldVal = snapshot[prop];
+      const newVal = _eval(store[prop]);
+      const actions = watchers[prop];
 
-      for (let prop in watchers) {
-        const oldVal = snapshot[prop];
-        const newVal = _eval(store[prop]);
-        const actions = watchers[prop];
-
-        if (newVal !== oldVal) {
-          actions.map((action) => action(newVal, oldVal));
-          snapshot[prop] = newVal;
-        }
+      if (newVal !== oldVal) {
+        actions.map((action) => action(newVal, oldVal));
+        snapshot[prop] = newVal;
       }
+    }
 
-      return true;
-    },
-    get(store, prop) {
-      return store.hasOwnProperty(prop) ? _eval(store[prop]) : store[prop];
-    },
-  });
-};
+    return true;
+  },
+  get(store, prop) {
+    return store.hasOwnProperty(prop) ? _eval(store[prop]) : store[prop];
+  },
+});
