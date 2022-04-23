@@ -1,6 +1,5 @@
-
 const Obj = Object;
-const _eval = val => typeof val === 'function' ? val() : val;
+const _eval = (val) => (typeof val === 'function' ? val() : val);
 
 const createStore = () => {
   return Obj.create({
@@ -15,33 +14,32 @@ const createStore = () => {
     },
     offChange(prop, actionToRemove) {
       const { watchers } = this;
-      watchers[prop] = watchers[prop].filter(
-        (action) => action !== actionToRemove
-      );
+      watchers[prop] = watchers[prop].filter((action) => action !== actionToRemove);
     },
   });
 };
 
-module.exports = defaults => new Proxy(Obj.assign(createStore(), defaults), {
-  set(store, prop, val) {
-    let { watchers, snapshot } = store;
+module.exports = (defaults) =>
+  new Proxy(Obj.assign(createStore(), defaults), {
+    set(store, prop, val) {
+      let { watchers, snapshot } = store;
 
-    store[prop] = val;
+      store[prop] = val;
 
-    for (let prop in watchers) {
-      const oldVal = snapshot[prop];
-      const newVal = _eval(store[prop]);
-      const actions = watchers[prop];
+      for (let prop in watchers) {
+        const oldVal = snapshot[prop];
+        const newVal = _eval(store[prop]);
+        const actions = watchers[prop];
 
-      if (newVal !== oldVal) {
-        actions.map((action) => action(newVal, oldVal));
-        snapshot[prop] = newVal;
+        if (newVal !== oldVal) {
+          actions.map((action) => action(newVal, oldVal));
+          snapshot[prop] = newVal;
+        }
       }
-    }
 
-    return true;
-  },
-  get(store, prop) {
-    return store.hasOwnProperty(prop) ? _eval(store[prop]) : store[prop];
-  },
-});
+      return true;
+    },
+    get(store, prop) {
+      return Obj.hasOwnProperty.call(store, prop) ? _eval(store[prop]) : store[prop];
+    },
+  });

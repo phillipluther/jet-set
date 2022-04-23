@@ -58,5 +58,7 @@ typings/
 .env
 
 # Dist output
-dist
+dist*
 
+# MacOS Trash
+.DS*
