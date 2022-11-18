@@ -14,7 +14,9 @@ const createStore = () => {
     },
     offChange(prop, actionToRemove) {
       const { watchers } = this;
-      watchers[prop] = watchers[prop].filter((action) => action !== actionToRemove);
+      watchers[prop] = watchers[prop].filter(
+        (action) => action !== actionToRemove
+      );
     },
   });
 };

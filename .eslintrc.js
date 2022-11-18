@@ -1,18 +1,9 @@
 module.exports = {
   env: {
-    browser: true,
-    commonjs: true,
-    es6: true,
     jest: true,
   },
-  extends: 'eslint:recommended',
-  parserOptions: {
-    sourceType: 'module',
-  },
+  extends: ['@phillipluther/eslint-config-pluther'],
   rules: {
-    indent: ['error', 2],
-    quotes: ['error', 'single'],
-    semi: ['error', 'always'],
-    noprototypebuiltins: 0,
-  },
+    '@typescript-eslint/no-var-requires': 'off',
+  }
 };
